@@ -12,12 +12,12 @@ class BalanceService
         $this->dataService = $dataService;
     }
 
-    public function getBalanceForAccount(int $id)
+    public function getBalanceForAccount(string $id)
     {
         $data = $this->dataService->getData();
 
         $account = collect($data)->filter(function ($value, $key) use ($id) {
-            return $key === $id;
+            return strval($key) === $id;
         })
         ->first();
 

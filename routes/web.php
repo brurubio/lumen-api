@@ -13,7 +13,7 @@
 |
 */
 // API routes
-$router->get('balance/{id}', [
+$router->get('balance', [
     'as' => 'api.get.balance',
     'uses' => 'ApiController@getBalance'
 ]);

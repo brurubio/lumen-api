@@ -26,9 +26,10 @@ class ApiController extends Controller
         $this->resetService = $resetService;
     }
 
-    public function getBalance(int $id)
+    public function getBalance(Request $request)
     {
-        $response = $this->balanceService->getBalanceForAccount($id);
+        $accountId = $request->get('account_id');
+        $response = $this->balanceService->getBalanceForAccount($accountId);
 
         return response($response['value'], $response['status'])
             ->header('Content-Type', 'text/plain');

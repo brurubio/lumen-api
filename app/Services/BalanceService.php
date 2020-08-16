@@ -16,6 +16,20 @@ class BalanceService
     {
         $data = $this->dataService->getData();
 
-        dd($data);
+        $account = collect($data)->filter(function ($value, $key) use ($id) {
+            return $key === $id;
+        })
+        ->first();
+
+        $hasAccount = !empty($account);
+
+        return [
+            'status' => $hasAccount
+                ? '200'
+                : '404',
+            'value' => $hasAccount
+                ? $account['balance']
+                : '0',
+        ];
     }
 }

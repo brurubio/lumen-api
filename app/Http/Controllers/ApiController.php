@@ -22,7 +22,10 @@ class ApiController extends Controller
 
     public function getBalance(int $id)
     {
-        return $this->balanceService->getBalanceForAccount($id);
+        $response = $this->balanceService->getBalanceForAccount($id);
+
+        return response($response['value'], $response['status'])
+            ->header('Content-Type', 'text/plain');
     }
 
     public function postEvent(Request $request)

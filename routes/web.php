@@ -12,7 +12,18 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
+// API routes
+$router->get('balance/{id}', [
+    'as' => 'api.get.balance',
+    'uses' => 'ApiController@getBalance'
+]);
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
-});
+$router->post('event', [
+    'as' => 'api.post.event',
+    'uses' => 'ApiController@postEvent'
+]);
+
+$router->post('reset', [
+    'as' => 'api.post.reset',
+    'uses' => 'ApiController@postReset'
+]);

@@ -17,12 +17,17 @@ class DataService
         return json_decode($file, true);
     }
 
-    public function saveData()
+    public function saveData($data)
     {
-        dd('saving file');
-        // // create/save file
-        // $json = json_encode($array);
-        // file_put_contents("myfile.json", $json);
+        $fullData = $this->getData();
+
+        $newData = array_replace($fullData, [
+            $data['id'] => $data,
+        ]);
+
+        file_put_contents(self::FILE_PATH, json_encode($newData));
+
+        return $data;
     }
 
     public function removeData()

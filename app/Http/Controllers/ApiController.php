@@ -3,21 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Services\BalanceService;
+use App\Services\ResetService;
 use Illuminate\Http\Request;
 
 class ApiController extends Controller
 {
     /** @var BalanceService $balanceService */
     private $balanceService;
+    /** @var ResetService $resetService */
+    private $resetService;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(BalanceService $balanceService)
-    {
+    public function __construct(
+        BalanceService $balanceService,
+        ResetService $resetService
+    ) {
         $this->balanceService = $balanceService;
+        $this->resetService = $resetService;
     }
 
     public function getBalance(int $id)
@@ -35,6 +41,9 @@ class ApiController extends Controller
 
     public function postReset()
     {
-        dd('posting reset...',);
+        $response = $this->resetService->resetData();
+
+        return response($response['value'], $response['status'])
+            ->header('Content-Type', 'text/plain');
     }
 }

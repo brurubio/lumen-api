@@ -24,4 +24,9 @@ class DataService
         // $json = json_encode($array);
         // file_put_contents("myfile.json", $json);
     }
+
+    public function removeData()
+    {
+        file_put_contents(self::FILE_PATH, json_encode([], JSON_FORCE_OBJECT));
+    }
 }

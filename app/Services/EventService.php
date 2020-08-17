@@ -36,12 +36,7 @@ class EventService
     {
         $id = $data['destination'];
 
-        $accounts = $this->dataService->getData();
-
-        $account = collect($accounts)->filter(function ($value, $key) use ($id) {
-                return strval($key) === $id;
-            })
-            ->first();
+        $account = $this->dataService->getAccountById($id);
 
         $updatedData = [
             'id' => $data['destination'],
@@ -66,12 +61,7 @@ class EventService
     {
         $id = $data['origin'];
 
-        $accounts = $this->dataService->getData();
-
-        $account = collect($accounts)->filter(function ($value, $key) use ($id) {
-                return strval($key) === $id;
-            })
-            ->first();
+        $account = $this->dataService->getAccountById($id);
 
         if (empty($account)) {
             return [
@@ -97,45 +87,27 @@ class EventService
 
     public function makeTransfer($data)
     {
-        $originId = $data['origin'];
-        $accounts = $this->dataService->getData();
+        // make a withdraw for origin account
+        $withdrawResponse = $this->makeWithdraw($data);
 
-        $originAccount = collect($accounts)->filter(function ($value, $key) use ($originId) {
-                return strval($key) === $originId;
-            })
-            ->first();
-
-        if (empty($originAccount)) {
-            return [
-                'status' => '404',
-                'value' => 0,
-            ];
+        if ($withdrawResponse['status'] === '404') {
+            return $withdrawResponse;
         }
 
+        // make a deposit for destination account
+        $this->makeDeposit($data);
+
+        $originId = $data['origin'];
+        $originAccount = $this->dataService->getAccountById($originId);
+
         $destinationId = $data['destination'];
-        $destinationAccount = collect($accounts)->filter(function ($value, $key) use ($destinationId) {
-                return strval($key) === $destinationId;
-            })
-            ->first();
-
-        $originData = [
-            'id' => $originAccount['id'],
-            'balance' => $originAccount['balance'] - $data['amount'],
-        ];
-
-        $destinationData = [
-            'id' => $destinationAccount['id'],
-            'balance' => $destinationAccount['balance'] + $data['amount'],
-        ];
-
-        $updatedOrigin = $this->dataService->saveData($originData);
-        $updatedDestination = $this->dataService->saveData($destinationData);
+        $destinationAccount = $this->dataService->getAccountById($destinationId);
 
         return [
             'status' => '201',
             'value' => [
-                'origin' => $updatedOrigin,
-                'destination' => $updatedDestination,
+                'origin' => $originAccount,
+                'destination' => $destinationAccount,
             ],
         ];
         # Transfer from existing account -> 201 {"origin": {"id":"100", "balance":0}, "destination": {"id":"300", "balance":15}}

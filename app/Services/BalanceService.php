@@ -16,10 +16,7 @@ class BalanceService
     {
         $data = $this->dataService->getData();
 
-        $account = collect($data)->filter(function ($value, $key) use ($id) {
-            return strval($key) === $id;
-        })
-        ->first();
+        $account = $this->dataService->getAccountById($id);
 
         $hasAccount = !empty($account);
 

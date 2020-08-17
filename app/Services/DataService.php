@@ -34,4 +34,14 @@ class DataService
     {
         file_put_contents(self::FILE_PATH, json_encode([], JSON_FORCE_OBJECT));
     }
+
+    public function getAccountById(string $id)
+    {
+        $accounts = $this->getData();
+
+        return collect($accounts)->filter(function ($value, $key) use ($id) {
+                return strval($key) === $id;
+            })
+            ->first();
+    }
 }

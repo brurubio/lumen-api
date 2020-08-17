@@ -22,7 +22,6 @@ class EventService
             case EventTypes::DEPOSIT:
                 return $this->makeDeposit($data);
             case EventTypes::WITHDRAW:
-                dd('make withdraw');
                 return $this->makeWithdraw($data);
             case EventTypes::TRANSFER:
                 dd('make transfer');
@@ -66,8 +65,35 @@ class EventService
 
     public function makeWithdraw($data)
     {
-        # Withdraw from non-existing account -> 404 0
-        # Withdraw from existing account -> 201 {"origin": {"id":"100", "balance":15}}
+        $id = $data['origin'];
+
+        $accounts = $this->dataService->getData();
+
+        $account = collect($accounts)->filter(function ($value, $key) use ($id) {
+                return strval($key) === $id;
+            })
+            ->first();
+
+        if (empty($account)) {
+            return [
+                'status' => '404',
+                'value' => 0,
+            ];
+        }
+
+        $updatedData = [
+            'id' => $data['origin'],
+            'balance' => $account['balance'] - $data['amount'],
+        ];
+
+        $response = $this->dataService->saveData($updatedData);
+
+        return [
+            'status' => '201',
+            'value' => [
+                'origin' => $response,
+            ],
+        ];
     }
 
     public function makeTransfer($data)
